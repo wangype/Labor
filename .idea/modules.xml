@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BackGroundService/BackGroundService.iml" filepath="$PROJECT_DIR$/BackGroundService/BackGroundService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Common/Common.iml" filepath="$PROJECT_DIR$/Common/Common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataCenter/DataCenter.iml" filepath="$PROJECT_DIR$/DataCenter/DataCenter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Labor.iml" filepath="$PROJECT_DIR$/Labor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UserInterface/UserInterface.iml" filepath="$PROJECT_DIR$/UserInterface/UserInterface.iml" />
+    </modules>
+  </component>
+</project>

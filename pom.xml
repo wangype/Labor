@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.labor</groupId>
+    <artifactId>Labor</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <!-- spring版本号 -->
+        <spring.version>4.0.6.RELEASE</spring.version>
+        <!-- mybatis版本号 -->
+        <mybatis.version>3.2.7</mybatis.version>
+        <!-- log4j日志文件管理包版本 -->
+        <slf4j.version>1.6.6</slf4j.version>
+        <log4j.version>1.2.14</log4j.version>
+    </properties>
+    <modules>
+        <module>BackGroundService</module>
+        <module>DataCenter</module>
+        <module>Common</module>
+        <module>UserInterface</module>
+
+    </modules>
+    <name>Labor</name>
+
+
+</project>
