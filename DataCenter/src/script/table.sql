@@ -15,16 +15,12 @@ CREATE TABLE `labor`.`shopping_user` (
   INDEX `name_index` (`username` ASC));
 
 
---货品表
-CREATE TABLE `labor`.`shopping_product` (
-  `product_id` INT NOT NULL COMMENT '货品ID',
-  `goods_id` INT NULL COMMENT '商品ID',
-  `name` VARCHAR(45) NULL COMMENT '名称',
-  `sn` VARCHAR(45) NULL COMMENT '货号',
-  `price` DECIMAL NULL COMMENT '价格',
-  `store` MEDIUMINT NULL COMMENT '库存',
-  `specs` VARCHAR(45) NULL COMMENT '规格',
-  PRIMARY KEY (`product_id`));
+--期刊表，表示第几期商品
+CREATE TABLE `labor`.`shopping_period` (
+  `id` INT NOT NULL COMMENT '期刊ID',
+  `period` INT NULL COMMENT '期数',
+  `theme` VARCHAR(45) NULL COMMENT '主题名称',
+  PRIMARY KEY (`id`));
 
 
 --商品表
@@ -59,11 +55,26 @@ CREATE TABLE `labor`.`shopping_goods` (
   `p10` VARCHAR(255) NULL,
   PRIMARY KEY (`goods_id`));
 
+
+
+--货品表
+CREATE TABLE `labor`.`shopping_product` (
+  `product_id` INT NOT NULL COMMENT '货品ID',
+  `goods_id` INT NULL COMMENT '商品ID',
+  `name` VARCHAR(45) NULL COMMENT '名称',
+  `sn` VARCHAR(45) NULL COMMENT '货号',
+  `price` DECIMAL NULL COMMENT '价格',
+  `store` MEDIUMINT NULL COMMENT '库存',
+  `specs` VARCHAR(45) NULL COMMENT '规格',
+  PRIMARY KEY (`product_id`));
+
+
 --库存表
 CREATE TABLE `labor`.`shopping_depot` (
   `id` INT NOT NULL,
   `name` VARCHAR(200) NULL COMMENT '库存地址',
   PRIMARY KEY (`id`));
+
 
 --货品库存表
 --这个表是为了定义多个库房的货品库存情况
@@ -75,28 +86,6 @@ CREATE TABLE `labor`.`shopping_product_store` (
   `store` INT NULL COMMENT '库存量',
   PRIMARY KEY (`id`));
 
-
---期刊表，表示第几期商品
-CREATE TABLE `labor`.`shopping_period` (
-  `id` INT NOT NULL COMMENT '期刊ID',
-  `period` INT NULL COMMENT '期数',
-  `theme` VARCHAR(45) NULL COMMENT '主题名称',
-  PRIMARY KEY (`id`));
-
-
---品牌表
-CREATE TABLE `labor`.`shopping_brand` (
-  `id` INT NOT NULL COMMENT '品牌id',
-  `name` VARCHAR(200) NULL COMMENT '品牌名称',
-  `url` VARCHAR(300) NULL COMMENT '品牌官网',
-  PRIMARY KEY (`id`));
-
-
---分类表
-CREATE TABLE `labor`.`shopping_cat` (
-  `id` INT NOT NULL,
-  `name` VARCHAR(200) NULL COMMENT '分类名称',
-  PRIMARY KEY (`id`));
 
 --订单表
 CREATE TABLE `labor`.`shopping_order` (
@@ -132,6 +121,7 @@ CREATE TABLE `labor`.`shopping_order_items` (
   `name` VARCHAR(200) NULL COMMENT '商品名称',
   PRIMARY KEY (`id`));
 
+
 --订单操作日志
 CREATE TABLE `labor`.`shopping_order_log` (
   `id` INT NOT NULL,
@@ -155,4 +145,23 @@ CREATE TABLE `labor`.`shopping_member_address` (
   `tel` VARCHAR(45) NULL COMMENT '固定电话',
   `mobile` VARCHAR(45) NULL COMMENT '手机号',
   PRIMARY KEY (`id`));
+
+
+--品牌表
+--暂时不需要
+CREATE TABLE `labor`.`shopping_brand` (
+  `id` INT NOT NULL COMMENT '品牌id',
+  `name` VARCHAR(200) NULL COMMENT '品牌名称',
+  `url` VARCHAR(300) NULL COMMENT '品牌官网',
+  PRIMARY KEY (`id`));
+
+
+--分类表
+--暂时不需要
+CREATE TABLE `labor`.`shopping_cat` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(200) NULL COMMENT '分类名称',
+  PRIMARY KEY (`id`));
+
+
 
