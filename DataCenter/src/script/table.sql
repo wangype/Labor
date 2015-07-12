@@ -1,5 +1,6 @@
 -- 用户表
---暂时不需要，通过微信平台直接获取用户信息
+--普通用户暂时不进入这个表，通过微信直接获取用户信息
+--管理员加入此表
 CREATE TABLE `labor`.`shopping_user` (
   `id` INT NOT NULL COMMENT '主键',
   `username` VARCHAR(50) NOT NULL COMMENT '用户名',
