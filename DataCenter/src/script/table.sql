@@ -1,4 +1,5 @@
 -- 用户表
+--暂时不需要，通过微信平台直接获取用户信息
 CREATE TABLE `labor`.`shopping_user` (
   `id` INT NOT NULL COMMENT '主键',
   `username` VARCHAR(50) NOT NULL COMMENT '用户名',
@@ -25,6 +26,7 @@ CREATE TABLE `labor`.`shopping_product` (
   `specs` VARCHAR(45) NULL COMMENT '规格',
   PRIMARY KEY (`product_id`));
 
+
 --商品表
 CREATE TABLE `labor`.`shopping_goods` (
   `goods_id` INT NOT NULL COMMENT '商品ID',
@@ -32,6 +34,7 @@ CREATE TABLE `labor`.`shopping_goods` (
   `sn` VARCHAR(200) NULL COMMENT '货号',
   `brand_id` INT NULL COMMENT '品牌ID',
   `cat_id` INT NULL COMMENT '所属分类ID',
+  `period_id` INT NULL COMMENT '期刊ID',
   `market_enable` SMALLINT NULL COMMENT '是否上架',
   `price` DECIMAL NULL COMMENT '销售价格',
   `cost` DECIMAL NULL COMMENT '成本价',
@@ -71,6 +74,15 @@ CREATE TABLE `labor`.`shopping_product_store` (
   `depotid` INT NULL COMMENT '库存id',
   `store` INT NULL COMMENT '库存量',
   PRIMARY KEY (`id`));
+
+
+--期刊表，表示第几期商品
+CREATE TABLE `labor`.`shopping_period` (
+  `id` INT NOT NULL COMMENT '期刊ID',
+  `period` INT NULL COMMENT '期数',
+  `theme` VARCHAR(45) NULL COMMENT '主题名称',
+  PRIMARY KEY (`id`));
+
 
 --品牌表
 CREATE TABLE `labor`.`shopping_brand` (
