@@ -1,6 +1,10 @@
--- 用户表
+--数据库表暂时这么设计，可能开发中会遇到很多问题，到时候在根据实际情况进行修改
+
+
+
+--用户表
 --普通用户暂时不进入这个表，通过微信直接获取用户信息
---管理员加入此表
+--管理员加入此表,所谓的简易用户表，可能在调用微信中会获取用户信息，到时候在设计新的表进行存储
 CREATE TABLE `labor`.`shopping_user` (
   `id` INT NOT NULL COMMENT '主键',
   `username` VARCHAR(50) NOT NULL COMMENT '用户名',
@@ -35,15 +39,15 @@ CREATE TABLE `labor`.`shopping_goods` (
   `market_enable` SMALLINT NULL COMMENT '是否上架',
   `price` DECIMAL NULL COMMENT '销售价格',
   `cost` DECIMAL NULL COMMENT '成本价',
+  `discount` DECIMAL NULL COMMENT '折扣量',
   `mkt_price` DECIMAL NULL COMMENT '市场价',
   `create_time` DATETIME NULL COMMENT '创建时间',
-  `love_count` INT NULL COMMENT '喜欢次数',
-  `buy_count` INT NULL COMMENT '购买次数',
+  `like_count` INT NULL COMMENT '喜欢次数',
+  `sale_count` INT NULL COMMENT '购买次数',
   `store` INT NULL COMMENT '库存',
   `intro` LONGTEXT NULL COMMENT '详细介绍',
-  `pic_intro` LONGTEXT NULL COMMENT '图文详情',
-  `thumbnail` LONGTEXT NULL COMMENT '缩略图',
-  `big_jpg` LONGTEXT NULL COMMENT '大图',
+  `pic_intro` VARCHAR(1000) NULL COMMENT '图文详情',
+  `jpg` VARCHAR(1000) NULL COMMENT '图片', --缩略图和大图都在这个里面
   `p1` VARCHAR(255) NULL,
   `p2` VARCHAR(255) NULL,
   `p3` VARCHAR(255) NULL,
@@ -66,11 +70,12 @@ CREATE TABLE `labor`.`shopping_product` (
   `sn` VARCHAR(45) NULL COMMENT '货号',
   `price` DECIMAL NULL COMMENT '价格',
   `store` MEDIUMINT NULL COMMENT '库存',
-  `specs` VARCHAR(45) NULL COMMENT '规格',
+  `specs` VARCHAR(200) NULL COMMENT '规格',
   PRIMARY KEY (`product_id`));
 
 
 --库存表
+--第一版可以暂时不需要用到
 CREATE TABLE `labor`.`shopping_depot` (
   `id` INT NOT NULL,
   `name` VARCHAR(200) NULL COMMENT '库存地址',
@@ -79,7 +84,7 @@ CREATE TABLE `labor`.`shopping_depot` (
 
 --货品库存表
 --这个表是为了定义多个库房的货品库存情况
-CREATE TABLE `labor`.`shopping_product_store` (
+CREATE TABLE `labor`.`shopping_storeroom` (
   `id` INT NOT NULL,
   `goodid` INT NULL COMMENT '商品id',
   `productid` INT NULL COMMENT '货品id',
@@ -89,8 +94,10 @@ CREATE TABLE `labor`.`shopping_product_store` (
 
 
 --订单表
+--其中有些字段可能和订单保存送货地址表中的字段冲突，现在先暂时存放进去，后台管理也方便查询
 CREATE TABLE `labor`.`shopping_order` (
   `id` INT NOT NULL,
+  `member_id` INT NOT NULL,  COMMENT '订单保存送货地址id',
   `sn` VARCHAR(200) NULL COMMENT '商品编号',
   `pay_status` INT NULL COMMENT '支付状态',
   `status` INT NULL COMMENT '订单状态',
@@ -107,6 +114,7 @@ CREATE TABLE `labor`.`shopping_order` (
   `order_amount` DECIMAL NULL COMMENT '订单价格',
   `ship_day` VARCHAR(45) NULL COMMENT '运送时间',
   `ship_address` VARCHAR(300) NULL COMMENT '运送地址',
+  `pay_time` DATETIME NULL COMMENT '支付时间',
   `shipping_area` VARCHAR(200) NULL COMMENT '运送区域',
   PRIMARY KEY (`id`));
 
