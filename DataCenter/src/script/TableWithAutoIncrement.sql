@@ -97,7 +97,7 @@ CREATE TABLE `labor`.`shopping_storeroom` (
 --其中有些字段可能和订单保存送货地址表中的字段冲突，现在先暂时存放进去，后台管理也方便查询
 CREATE TABLE `labor`.`shopping_order` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `member_id` INT NOT NULL,  COMMENT '订单保存送货地址id',
+  `member_id` INT NOT NULL  COMMENT '订单保存送货地址id',
   `sn` VARCHAR(200) NULL COMMENT '商品编号',
   `pay_status` INT NULL COMMENT '支付状态',
   `status` INT NULL COMMENT '订单状态',
