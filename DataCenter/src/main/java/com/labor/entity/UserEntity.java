@@ -1,9 +1,9 @@
-package com.labor.model;
+package com.labor.entity;
 
 /**
  * Created by wyp on 15-7-2.
  */
-public class User {
+public class UserEntity {
 
     private int id;
     private String userName;

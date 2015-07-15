@@ -1,6 +1,6 @@
 package com.labor.operation;
 
-import com.labor.model.User;
+import com.labor.entity.UserEntity;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -10,10 +10,10 @@ import org.apache.ibatis.annotations.Select;
 public interface IUserOperation {
 
     @Select("select * from user where id=#{id}")
-    public User selectUserByID(int id);
+    public UserEntity selectUserByID(int id);
 
     @Select("select * from user where user_name=#{userName} and password=#{passWord}")
-    public User login(@Param("userName")String userName, @Param("passWord")String passWord);
+    public UserEntity login(@Param("userName")String userName, @Param("passWord")String passWord);
 
 
 

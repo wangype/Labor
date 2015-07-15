@@ -1,4 +1,4 @@
-package com.labor.model;
+package com.labor.entity;
 
 import com.labor.service.UserService;
 import org.springframework.context.ApplicationContext;
@@ -14,7 +14,7 @@ public class Test {
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         //this.context = new FileSystemXmlApplicationContext("WebRoot/WEB-INF/applicationContext.xml");
         UserService userService = context.getBean(UserService.class);
-        User user = userService.getUserById(1);
+        UserEntity user = userService.getUserById(1);
 //        System.out.println(user.getName());
     }
 
