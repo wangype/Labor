@@ -10,7 +10,7 @@ public class UserEntity {
     private int userType;
     private String eMail;
     private String passWord;
-    private int phoneNum;
+    private String phoneNum;
 
     public int getId() {
         return id;
@@ -52,11 +52,11 @@ public class UserEntity {
         this.passWord = passWord;
     }
 
-    public int getPhoneNum() {
+    public String getPhoneNum() {
         return phoneNum;
     }
 
-    public void setPhoneNum(int phoneNum) {
+    public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
     }
 }

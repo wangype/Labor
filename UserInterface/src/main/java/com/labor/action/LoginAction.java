@@ -1,5 +1,7 @@
 package com.labor.action;
 
+import com.alibaba.fastjson.JSON;
+import com.labor.MD5Utils;
 import com.labor.common.Constant;
 import com.labor.common.ReturnStatus;
 import com.labor.entity.UserEntity;
@@ -7,10 +9,15 @@ import com.labor.model.UserModel;
 import com.labor.request.UserLoginRequest;
 import com.labor.response.RetResponse;
 import com.labor.service.UserService;
+import com.labor.utils.ConvertToolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by wyp on 15-7-13.
@@ -26,11 +33,12 @@ public class LoginAction {
     @RequestMapping(value = "login/{userName}", method = RequestMethod.GET)
     @ResponseBody
     public RetResponse login(@PathVariable("userName") String userName,
-                        @RequestBody UserLoginRequest userLoginRequest,
+                        @RequestBody String passWordRequest,
                         HttpServletRequest request){
         RetResponse retResponse = new RetResponse();
+        UserLoginRequest userLoginRequest = JSON.parseObject(passWordRequest, UserLoginRequest.class);
         if (userLoginRequest == null || userLoginRequest.getPassWord() == null) {
-            retResponse.setStatus(ReturnStatus.FATAL);
+            retResponse.setStatus(ReturnStatus.UNKOWN_ERROR);
             return retResponse;
         }
         UserEntity userEntity = userService.login(userName, userLoginRequest.getPassWord());
@@ -38,9 +46,11 @@ public class LoginAction {
             retResponse.setStatus(ReturnStatus.LOGIN_FAIL);
             return retResponse;
         }
-        request.getSession().setAttribute(Constant.USERSESSION, new UserModel());
+        UserModel userModel = ConvertToolUtils.userEntityToModel.convertEntity(userEntity);
+        request.getSession().setAttribute(Constant.USERSESSION, userModel);
         retResponse.setStatus(ReturnStatus.LOGIN_SUCCESS);
         return retResponse;
     }
+
 
 }

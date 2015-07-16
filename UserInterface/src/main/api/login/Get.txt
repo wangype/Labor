@@ -1,0 +1,6 @@
+发送请求如下：
+localhost:8080/userinfo/login/{#userName}
+携带参数 {"passWord":"admin"}
+
+返回格式：
+{"status":"LOGIN_SUCCESS"}

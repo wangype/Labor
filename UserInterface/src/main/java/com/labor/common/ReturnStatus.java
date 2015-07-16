@@ -6,7 +6,7 @@ package com.labor.common;
 public class ReturnStatus {
 
     //未知错误
-    public final static String FATAL = "FATAL";
+    public final static String UNKOWN_ERROR = "UNKOWN_ERROR";
 
     //登录成功
     public final static String LOGIN_SUCCESS = "LOGIN_SUCCESS";

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.labor.entity.UserEntity">
+    <select id="login" resultType="UserEntity">
+        select
+        id             as "id",
+        username       as "userName",
+        password       as "passWord"
+    from shopping_user
+    where username = {#userName} and password = {#passWord}
+    </select>
+</mapper>
