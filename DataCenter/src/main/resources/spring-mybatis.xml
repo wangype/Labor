@@ -50,12 +50,14 @@
     <bean id="sqlSessionFactory"
           class="org.mybatis.spring.SqlSessionFactoryBean"
           p:dataSource-ref="dataSource"
-          p:mapperLocations="classpath*:com/labor/dao/mapper/*.xml"/>
+          p:mapperLocations="classpath:/com/labor/dao/mapper/*.xml"/>
     <!-- configLocation为mybatis属性 mapperLocations为所有mapper-->
 
     <!-- 自动扫描接口-->
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.labor.dao" />
-    </bean>
+    <!-- spring与mybatis整合配置，扫描所有dao -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"
+          p:basePackage="com.labor.dao"
+          p:sqlSessionFactoryBeanName="sqlSessionFactory"
+          p:annotationClass="com.labor.DaoMaster"/>
 
 </beans>

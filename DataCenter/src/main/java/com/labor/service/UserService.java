@@ -2,7 +2,7 @@ package com.labor.service;
 
 import com.labor.MD5Utils;
 import com.labor.entity.UserEntity;
-import com.labor.dao.IUserOperation;
+import com.labor.dao.UserMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 public class UserService {
 
     @Autowired
-    private IUserOperation userOperation;
+    private UserMapper userOperation;
 
     private Logger logger = Logger.getLogger(UserService.class);
 

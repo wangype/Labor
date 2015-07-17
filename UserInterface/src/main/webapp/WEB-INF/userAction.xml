@@ -31,7 +31,7 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <import resource="classpath:applicationContext.xml"/>
+    <import resource="classpath:spring-mybatis.xml"/>
 
 
 </beans>

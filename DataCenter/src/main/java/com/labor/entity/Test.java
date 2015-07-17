@@ -11,8 +11,8 @@ public class Test {
 
 
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-        //this.context = new FileSystemXmlApplicationContext("WebRoot/WEB-INF/applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("spring-mybatis.xml");
+        //this.context = new FileSystemXmlApplicationContext("WebRoot/WEB-INF/spring-mybatis.xml");
         UserService userService = context.getBean(UserService.class);
         UserEntity user = userService.getUserById(1);
 //        System.out.println(user.getName());
