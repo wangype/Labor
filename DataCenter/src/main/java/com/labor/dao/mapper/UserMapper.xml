@@ -4,17 +4,25 @@
 
 <mapper namespace="com.labor.dao.UserMapper">
 
+
     <resultMap id="User" type="com.labor.entity.UserEntity" >
-        <result column="unit" property="unit" jdbcType="LONGVARCHAR" />
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="username" property="userName" jdbcType="VARCHAR" />
+        <result column="password" property="passWord" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="email" property="eMail" jdbcType="VARCHAR" />
+        <result column="user_type" property="userType" jdbcType="INTEGER" />
+        <result column="tel" property="tel" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="deleteflag" property="deleteFlag" jdbcType="INTEGER" />
+        <result column="createtime" property="createTime" jdbcType="TIMESTAMP" />
     </resultMap>
 
     <select id="login" resultMap="User">
         select
-        id             as "id",
-        username       as "userName",
-        password       as "passWord"
+        id, username, address, email, user_type, createtime
     from shopping_user
-    where username = {#userName} and password = {#passWord}
+    where username = #{0, jdbcType=INTEGER} and password = #{1, jdbcType=VARCHAR}
     </select>
 
 

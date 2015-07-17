@@ -19,12 +19,12 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
+/**登录controller
  * Created by wyp on 15-7-13.
  */
 @RestController
 @RequestMapping("/userinfo")
-public class LoginAction {
+public class LoginController {
 
     @Autowired
     private UserService userService;
@@ -49,6 +49,7 @@ public class LoginAction {
         UserModel userModel = ConvertToolUtils.userEntityToModel.convertEntity(userEntity);
         request.getSession().setAttribute(Constant.USERSESSION, userModel);
         retResponse.setStatus(ReturnStatus.LOGIN_SUCCESS);
+        retResponse.setObject(userModel);
         return retResponse;
     }
 

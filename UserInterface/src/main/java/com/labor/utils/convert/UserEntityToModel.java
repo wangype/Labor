@@ -13,7 +13,8 @@ public class UserEntityToModel {
         UserModel userModel = new UserModel();
         userModel.setUserName(userEntity.getUserName());
         userModel.seteMail(userEntity.geteMail());
-        userModel.setPhone(userEntity.getPhoneNum());
+        userModel.setPhone(userEntity.getMobile());
+        userModel.setUserType(userEntity.getUserType());
         return userModel;
     }
 
