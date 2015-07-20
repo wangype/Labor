@@ -1,7 +1,6 @@
 package com.labor.action;
 
 import com.alibaba.fastjson.JSON;
-import com.labor.MD5Utils;
 import com.labor.common.Constant;
 import com.labor.common.ReturnStatus;
 import com.labor.entity.UserEntity;
@@ -12,12 +11,8 @@ import com.labor.service.UserService;
 import com.labor.utils.ConvertToolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**登录controller
  * Created by wyp on 15-7-13.
