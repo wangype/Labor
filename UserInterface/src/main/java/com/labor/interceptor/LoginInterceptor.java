@@ -18,15 +18,15 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
-        if (request.getRequestURI().indexOf("login") != -1) {
-            return true;
-        }
-        HttpSession session=request.getSession();
-        UserModel userModel = (UserModel) session.getAttribute(Constant.USERSESSION);
-        if (userModel == null) {
-            response.sendRedirect(LOGIN_URL);
-            return false;
-        }
+//        if (request.getRequestURI().indexOf("login") != -1) {
+//            return true;
+//        }
+//        HttpSession session=request.getSession();
+//        UserModel userModel = (UserModel) session.getAttribute(Constant.USERSESSION);
+//        if (userModel == null) {
+//            response.sendRedirect(LOGIN_URL);
+//            return false;
+//        }
         return true;
     }
 

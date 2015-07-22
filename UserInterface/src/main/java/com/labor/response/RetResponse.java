@@ -7,7 +7,7 @@ public class RetResponse {
 
     private String status;
 
-    private Object object;
+    private Object data;
 
     public String getStatus() {
         return status;
@@ -17,11 +17,11 @@ public class RetResponse {
         this.status = status;
     }
 
-    public Object getObject() {
-        return object;
+    public Object getData() {
+        return data;
     }
 
-    public void setObject(Object object) {
-        this.object = object;
+    public void setData(Object data) {
+        this.data = data;
     }
 }

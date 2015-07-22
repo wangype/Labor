@@ -7,30 +7,36 @@ import com.labor.entity.UserEntity;
 import com.labor.model.UserModel;
 import com.labor.request.UserLoginRequest;
 import com.labor.response.RetResponse;
-import com.labor.service.UserService;
+import com.labor.service.IUserService;
+import com.labor.service.impl.UserServiceImpl;
 import com.labor.utils.ConvertToolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**登录controller
+/**
+ * 登录controller
  * Created by wyp on 15-7-13.
  */
 @RestController
 @RequestMapping("/userinfo")
-public class LoginController {
+public class LoginAction {
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
 
     @RequestMapping(value = "login/{userName}", method = RequestMethod.GET)
     @ResponseBody
     public RetResponse login(@PathVariable("userName") String userName,
-                        @RequestBody String passWordRequest,
-                        HttpServletRequest request){
+                             @RequestBody String passWordRequest,
+                             HttpServletRequest request) {
         RetResponse retResponse = new RetResponse();
+        if (passWordRequest == null || passWordRequest.equals("")) {
+            retResponse.setStatus(ReturnStatus.UNKOWN_ERROR);
+            return retResponse;
+        }
         UserLoginRequest userLoginRequest = JSON.parseObject(passWordRequest, UserLoginRequest.class);
         if (userLoginRequest == null || userLoginRequest.getPassWord() == null) {
             retResponse.setStatus(ReturnStatus.UNKOWN_ERROR);
@@ -44,7 +50,7 @@ public class LoginController {
         UserModel userModel = ConvertToolUtils.userEntityToModel.convertEntity(userEntity);
         request.getSession().setAttribute(Constant.USERSESSION, userModel);
         retResponse.setStatus(ReturnStatus.LOGIN_SUCCESS);
-        retResponse.setObject(userModel);
+        retResponse.setData(userModel);
         return retResponse;
     }
 

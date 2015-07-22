@@ -5,6 +5,9 @@ package com.labor.common;
  */
 public class ReturnStatus {
 
+
+    public final static String SUCCESS = "SUCCESS";
+
     //未知错误
     public final static String UNKOWN_ERROR = "UNKOWN_ERROR";
 

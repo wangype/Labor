@@ -1,8 +1,9 @@
-package com.labor.service;
+package com.labor.service.impl;
 
 import com.labor.MD5Utils;
 import com.labor.entity.UserEntity;
 import com.labor.dao.UserMapper;
+import com.labor.service.IUserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,15 +14,15 @@ import java.security.NoSuchAlgorithmException;
  * Created by wyp on 15-7-2.
  */
 @Service
-public class UserService {
+public class UserServiceImpl implements IUserService{
 
     @Autowired
-    private UserMapper userOperation;
+    private UserMapper userDao;
 
-    private Logger logger = Logger.getLogger(UserService.class);
+    private Logger logger = Logger.getLogger(UserServiceImpl.class);
 
     public UserEntity getUserById(int id) {
-        return userOperation.selectUserByID(id);
+        return userDao.selectUserByID(id);
     }
 
     public UserEntity login(String userName, String passWord) {
@@ -32,7 +33,7 @@ public class UserService {
             logger.error(e.getMessage());
             return null;
         }
-        return userOperation.login(userName, passStr);
+        return userDao.login(userName, passStr);
     }
 
 }
