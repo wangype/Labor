@@ -23,6 +23,7 @@
         <module>DataCenter</module>
         <module>Common</module>
         <module>UserInterface</module>
+        <module>Fetch</module>
 
     </modules>
     <name>Labor</name>
