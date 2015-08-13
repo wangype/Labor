@@ -106,7 +106,7 @@ public class Runner {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             // 发送注册请求
             logger.info(String.format("Email [%s] 开始进行注册", mailUser));
-            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, false, 5);
+            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, false, 10, mailUser);
             if (reponse != null) {
                 logger.info(String.format("Email [%s] 注册成功", mailUser));
             } else {
@@ -189,7 +189,7 @@ public class Runner {
             String request_url = "https://aksale.advs.jp/cp/akachan_sale_pc/reg_confirm_event.cgi";
             Map<String, String> params = new HashMap<String, String>();
             params.put("sbmt", Constants.SBMT);
-            CloseableHttpResponse response = Utils.postUtilNoDbFailure(httpclient, request_url, params, false, 5);
+            CloseableHttpResponse response = Utils.postUtilNoDbFailure(httpclient, request_url, params, false, 5, mailUser);
             if (response != null) {
                 return "确认成功";
             } else {
@@ -210,7 +210,7 @@ public class Runner {
             params.put(Constants.TEL2, vipMap.get(Constants.TEL2));
             params.put(Constants.TEL3, vipMap.get(Constants.TEL3));
             params.put(Constants.SBMT, Constants.SBMT);
-            CloseableHttpResponse response = Utils.postUtilOK(httpclient, request_url, params, false, 5);
+            CloseableHttpResponse response = Utils.postUtilNoDbFailure(httpclient, request_url, params, false, 5, mailUser);
             if (response != null) {
                 return "填写信息成功";
             } else {
@@ -223,7 +223,7 @@ public class Runner {
             Map<String, String> params = new HashMap<String, String>();
             params.put("sbmt", Constants.SBMT);
             params.put("card_no", cardNO);
-            CloseableHttpResponse response = Utils.postUtilOK(httpclient, request_url, params, false, 5);
+            CloseableHttpResponse response = Utils.postUtilNoDbFailure(httpclient, request_url, params, false, 5, mailUser);
             if (response != null) {
                 return "提交卡号成功";
             } else {
@@ -233,7 +233,7 @@ public class Runner {
 
 
         private String checkUrlValid(String url, CloseableHttpClient httpclient) {
-            CloseableHttpResponse response = Utils.getUtilNoErr(httpclient, url, null, false, 50);
+            CloseableHttpResponse response = Utils.getUtilNoErr(httpclient, url, null, false, 30, mailUser);
             if (response == null) {
                 logger.error("提取的url有误，无法打开 " + url);
                 return String.format("url [%s] error", url);

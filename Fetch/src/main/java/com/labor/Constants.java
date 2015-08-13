@@ -76,6 +76,7 @@ public class Constants {
     public static Pattern PARRTERN_ZSCALER = Pattern.compile("Zscaler Directory Authentication");
     public static Pattern PARRTERN_VIP_HAS_RESERVED = Pattern.compile("既にご予約済みですので、新規予約ができません");
     public static Pattern PARRTERN_REG_ERROR = Pattern.compile("不正なアクセスです。恐れ入りますが、もう一度最初から操作してください");
+    public static Pattern PARRTERN_OUT_ERROR = Pattern.compile("予約数に達したため、受付は終了いたしました");
 
 
     public static Pattern PARRTERN_SUCCESS = Pattern.compile("予約受付番号");

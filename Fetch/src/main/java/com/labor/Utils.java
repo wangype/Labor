@@ -63,39 +63,57 @@ public class Utils {
 
 
     public static CloseableHttpResponse postUtilNoDbFailure(CloseableHttpClient httpclient, String requestUrl,
-                                                            Map<String, String> params, boolean isUseProxy, int maxRetry) {
+                                                            Map<String, String> params, boolean isUseProxy, int maxRetry,
+                                                            String mailUser) {
+        CloseableHttpResponse response = null;
         try {
             for (int i = 0; i < maxRetry; i++) {
-                CloseableHttpResponse response = postUtilOK(httpclient, requestUrl, params, isUseProxy, maxRetry);
+                response = postUtilOK(httpclient, requestUrl, params, isUseProxy, maxRetry);
                 if (response == null) {
+                    threadSleep(500);
                     continue;
                 }
                 String content = EntityUtils.toString(response.getEntity());
-                logger.info(content);
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_BEFORE_START.toString()+"[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_DB_FAIL.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_DB_FAIL.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_REG_ERROR.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_REG_ERROR.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
-                } else if (Constants.PARRTERN_UNKNOWN_ERR.matcher(content).find()){
+                } else if (Constants.PARRTERN_UNKNOWN_ERR.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_UNKNOWN_ERR.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
-                }else {
+                } else if (Constants.PARRTERN_OUT_ERROR.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_OUT_ERROR.toString() + "[%s]", mailUser));
+                    threadSleep(500);
+                    continue;
+                } else {
                     return response;
                 }
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } finally {
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return null;
     }
 
 
-    public static CloseableHttpResponse postUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
+    private static CloseableHttpResponse postUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
                                                    boolean isUseProxy, int maxRetry) {
         HttpPost post = new HttpPost(requestUrl);
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -122,15 +140,6 @@ public class Utils {
                 logger.error(e.getMessage());
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                threadSleep(100);
-            } finally {
-                if (response != null) {
-                    try {
-                        response.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }
         return response;
@@ -157,14 +166,6 @@ public class Utils {
             } catch (IOException e) {
                 logger.error(e.getMessage());
                 threadSleep(500);
-            } finally {
-                if (response != null) {
-                    try {
-                        response.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
             if (response == null) {
                 continue;
@@ -177,25 +178,30 @@ public class Utils {
 
 
     public static CloseableHttpResponse getUtilNoErr(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
-                                                     boolean isUseProxy, int maxRetry) {
+                                                     boolean isUseProxy, int maxRetry, String mailUser) {
         CloseableHttpResponse response = null;
         try {
             for (int i = 0; i < maxRetry; i++) {
                 response = getUtilOK(httpclient, requestUrl, params, isUseProxy, maxRetry);
                 if (response == null) {
+                    threadSleep(500);
                     continue;
                 }
                 String content = EntityUtils.toString(response.getEntity());
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_BEFORE_START.toString()+"[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_SESSION_ERR.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_SESSION_ERR.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_ZSCALER.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_ZSCALER.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_REG_ERROR.matcher(content).find()) {
+                    logger.error(String.format(Constants.PARRTERN_REG_ERROR.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else {
@@ -204,6 +210,14 @@ public class Utils {
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } finally {
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return response;
     }
