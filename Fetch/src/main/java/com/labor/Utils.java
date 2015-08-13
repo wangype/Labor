@@ -111,7 +111,16 @@ public class Utils {
                 logger.error(e.getMessage());
             } catch (IOException e) {
                 logger.error(e.getMessage());
+            } finally {
+                if (response != null) {
+                    try {
+                        response.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+            Utils.ThreadSleep(500);
         }
         return response;
     }
