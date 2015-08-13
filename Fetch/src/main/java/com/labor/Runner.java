@@ -40,7 +40,7 @@ public class Runner {
             Utils.ThreadSleep(300);
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(30);
+        ExecutorService executorService = Executors.newCachedThreadPool();
 
         List<Map<String, String>> vipInfo = (List<Map<String, String>>) CollectorInfo.getValue(Constants.VIPS);
         int size = mailsInfo.size();
