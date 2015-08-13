@@ -1,13 +1,10 @@
 package com.labor.interceptor;
 
-import com.labor.common.Constant;
-import com.labor.model.UserModel;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * Created by wyp on 15-7-13.

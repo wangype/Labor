@@ -27,18 +27,20 @@ public class Runner {
             MailUtils.cleanMail(mailMap.get(Constants.HOST),
                     mailMap.get(Constants.USERMAIL),
                     mailMap.get(Constants.PASSWORD));
-            Utils.ThreadSleep(500);
+            Utils.threadSleep(500);
         }
         // 2. 等待启动时间
         Date excuteTime = (Date) CollectorInfo.getValue(Constants.EXCUTETIME);
         long startTime = excuteTime.getTime();
+        logger.info(String.format("等待执行时间[%s]", Utils.dateToStr(excuteTime)));
         while (true) {
             long current = System.currentTimeMillis();
             if (current >= startTime) {
                 break;
             }
-            Utils.ThreadSleep(300);
+            Utils.threadSleep(300);
         }
+        logger.info("执行时间到，开始执行");
 
         ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -149,7 +151,7 @@ public class Runner {
                     break;
                 }
                 logger.info(String.format("[%s] 检查邮箱中注册邮件", mailUser));
-                Utils.ThreadSleep(1000);
+                Utils.threadSleep(1000);
                 synchronized (checkSet) {
                     // 注册邮件失败，这里就不再进行检查
                     if (checkSet.contains(mailUser))

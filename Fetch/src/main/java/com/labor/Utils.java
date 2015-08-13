@@ -40,7 +40,7 @@ public class Utils {
     private static Logger logger = Logger.getLogger(Utils.class);
 
 
-    public static void ThreadSleep(long time) {
+    public static void threadSleep(long time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
@@ -55,6 +55,12 @@ public class Utils {
     }
 
 
+    public static String dateToStr(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(date);
+    }
+
+
     public static CloseableHttpResponse postUtilNoDbFailure(CloseableHttpClient httpclient, String requestUrl,
                                                             Map<String, String> params, boolean isUseProxy, int maxRetry) {
         try {
@@ -65,13 +71,13 @@ public class Utils {
                 }
                 String content = EntityUtils.toString(response.getEntity());
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
-                    ThreadSleep(1000);
+                    threadSleep(1000);
                     continue;
                 } else if (Constants.PARRTERN_DB_FAIL.matcher(content).find()) {
-                    ThreadSleep(1000);
+                    threadSleep(1000);
                     continue;
                 } else if (Constants.PARRTERN_REG_ERROR.matcher(content).find()) {
-                    ThreadSleep(1000);
+                    threadSleep(1000);
                     continue;
                 } else {
                     return response;
@@ -111,7 +117,7 @@ public class Utils {
                 logger.error(e.getMessage());
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                Utils.ThreadSleep(500);
+                threadSleep(500);
             } finally {
                 if (response != null) {
                     try {
@@ -145,7 +151,7 @@ public class Utils {
                 response = httpclient.execute(httpGet);
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                Utils.ThreadSleep(500);
+                threadSleep(500);
             } finally {
                 if (response != null) {
                     try {
@@ -176,16 +182,16 @@ public class Utils {
                 }
                 String content = EntityUtils.toString(response.getEntity());
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
-                    ThreadSleep(1000);
+                    threadSleep(1000);
                     continue;
                 } else if (Constants.PARRTERN_SESSION_ERR.matcher(content).find()) {
-                    ThreadSleep(1000);
+                    threadSleep(1000);
                     continue;
                 } else if (Constants.PARRTERN_ZSCALER.matcher(content).find()) {
-                    ThreadSleep(1000);
+                    threadSleep(1000);
                     continue;
                 } else if (Constants.PARRTERN_REG_ERROR.matcher(content).find()) {
-                    ThreadSleep(1000);
+                    threadSleep(1000);
                     continue;
                 } else {
                     return response;
