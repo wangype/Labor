@@ -71,6 +71,7 @@ public class Utils {
                     continue;
                 }
                 String content = EntityUtils.toString(response.getEntity());
+                logger.info(content);
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
                     threadSleep(500);
                     continue;
@@ -113,7 +114,6 @@ public class Utils {
                 response = httpclient.execute(post);
                 status = response.getStatusLine().getStatusCode();
                 if (status == 200) {
-                    logger.info(EntityUtils.toString(response.getEntity()));
                     return response;
                 }
             } catch (UnsupportedEncodingException e) {

@@ -56,7 +56,7 @@ public class Runner {
             index++;
         }
 
-        //主线程等子线程
+        // 主线程等子线程完成
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
@@ -131,7 +131,8 @@ public class Runner {
         private Map<String, String> vipMap;
         private CountDownLatch countDownLatch;
 
-        public ComfirmOrder(String mailUser, String host, String passWord, Map<String, String> vipMap, CountDownLatch countDownLatch) {
+        public ComfirmOrder(String mailUser, String host, String passWord, Map<String, String> vipMap,
+                            CountDownLatch countDownLatch) {
             this.mailUser = mailUser;
             this.host = host;
             this.passWord = passWord;
