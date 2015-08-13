@@ -146,7 +146,7 @@ public class Utils {
     }
 
 
-    public static CloseableHttpResponse getUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
+    private static CloseableHttpResponse getUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
                                                   boolean isUseProxy, int maxRetry) {
         CloseableHttpResponse response = null;
         for (int i = 0; i < maxRetry; i++) {

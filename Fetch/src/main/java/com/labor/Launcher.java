@@ -23,6 +23,7 @@ public class Launcher {
         options.addOption("v", true, "The vip info");
         options.addOption("e", true, "events.csv");
         options.addOption("c", true, "confirm_time");
+//        options.addOption("r", false, "receive mail");
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);

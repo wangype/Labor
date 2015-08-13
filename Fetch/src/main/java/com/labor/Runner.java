@@ -20,6 +20,7 @@ public class Runner {
     private static Logger logger = Logger.getLogger(Runner.class);
 
     public void excute() {
+        logger.info("开始清理邮箱");
         // 1.清理邮箱
         List<Map<String, String>> mailsInfo = (List<Map<String, String>>) CollectorInfo.getValue(Constants.MAILS);
         for (Map<String, String> mailMap : mailsInfo) {
@@ -79,6 +80,7 @@ public class Runner {
         executorService.shutdown();
         logger.info("运行结束");
     }
+
 
     // 注册邮件线程
     private class RegForOrder extends Thread {
