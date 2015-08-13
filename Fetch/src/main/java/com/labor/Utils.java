@@ -111,6 +111,7 @@ public class Utils {
                 logger.error(e.getMessage());
             } catch (IOException e) {
                 logger.error(e.getMessage());
+                Utils.ThreadSleep(500);
             } finally {
                 if (response != null) {
                     try {
@@ -120,7 +121,6 @@ public class Utils {
                     }
                 }
             }
-            Utils.ThreadSleep(500);
         }
         return response;
     }
@@ -145,6 +145,7 @@ public class Utils {
                 response = httpclient.execute(httpGet);
             } catch (IOException e) {
                 logger.error(e.getMessage());
+                Utils.ThreadSleep(500);
             }
             if (response == null) {
                 continue;
