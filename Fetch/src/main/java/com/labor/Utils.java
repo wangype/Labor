@@ -72,15 +72,18 @@ public class Utils {
                 }
                 String content = EntityUtils.toString(response.getEntity());
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
-                    threadSleep(1000);
+                    threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_DB_FAIL.matcher(content).find()) {
-                    threadSleep(1000);
+                    threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_REG_ERROR.matcher(content).find()) {
-                    threadSleep(1000);
+                    threadSleep(500);
                     continue;
-                } else {
+                } else if (Constants.PARRTERN_UNKNOWN_ERR.matcher(content).find()){
+                    threadSleep(500);
+                    continue;
+                }else {
                     return response;
                 }
             }
@@ -119,7 +122,7 @@ public class Utils {
                 logger.error(e.getMessage());
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                threadSleep(500);
+                threadSleep(100);
             } finally {
                 if (response != null) {
                     try {
@@ -184,16 +187,16 @@ public class Utils {
                 }
                 String content = EntityUtils.toString(response.getEntity());
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
-                    threadSleep(1000);
+                    threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_SESSION_ERR.matcher(content).find()) {
-                    threadSleep(1000);
+                    threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_ZSCALER.matcher(content).find()) {
-                    threadSleep(1000);
+                    threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_REG_ERROR.matcher(content).find()) {
-                    threadSleep(1000);
+                    threadSleep(500);
                     continue;
                 } else {
                     return response;

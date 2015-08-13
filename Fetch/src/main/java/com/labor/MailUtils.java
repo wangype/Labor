@@ -86,60 +86,98 @@ public class MailUtils {
 //    }
 
 
-    public static List<String> getComfirmInfo(String host, String userMail, String passWord) {
+//    public static List<String> getComfirmInfo(String host, String userMail, String passWord) {
+//        List<String> contentList = new ArrayList<String>();
+//        try {
+//            POP3Client pop3Client = new POP3Client();
+//            pop3Client.connect(host);
+//            boolean isLogin = pop3Client.login(userMail, passWord);
+//            if (!isLogin) {
+//                logger.error("邮箱登录有误：userName:" + userMail + " host: " + host + " pw: " + passWord);
+//                return null;
+//            }
+//            POP3MessageInfo[] pop3MessageInfos = pop3Client.listMessages();
+//            StringBuilder content = new StringBuilder();
+//            for (POP3MessageInfo pop3MessageInfo : pop3MessageInfos) {
+//                int id = pop3MessageInfo.number;
+//                Reader reader = pop3Client.retrieveMessage(id);
+//                BufferedReader br = new BufferedReader(reader);
+//                while (br.readLine() != null) {
+//                    content.append(br.readLine());
+//                }
+//                br.close();
+//                if (Constants.PARRTERN_SUCCESS.matcher(content).find()) {
+//                    contentList.add(content.toString());
+//                }
+//            }
+//            pop3Client.logout();
+//            pop3Client.disconnect();
+//        } catch (IOException e) {
+//            logger.error(e.getMessage());
+//        }
+//        return contentList;
+//    }
+
+
+
+    public static List<String> getComfirmInfoFromMail(String host, String userMail, String passWord) {
         List<String> contentList = new ArrayList<String>();
         try {
-            POP3Client pop3Client = new POP3Client();
-            pop3Client.connect(host);
-            boolean isLogin = pop3Client.login(userMail, passWord);
-            if (!isLogin) {
-                logger.error("邮箱登录有误：userName:" + userMail + " host: " + host + " pw: " + passWord);
-                return null;
-            }
-            POP3MessageInfo[] pop3MessageInfos = pop3Client.listMessages();
-            StringBuilder content = new StringBuilder();
-            for (POP3MessageInfo pop3MessageInfo : pop3MessageInfos) {
-                int id = pop3MessageInfo.number;
-                Reader reader = pop3Client.retrieveMessage(id);
-                BufferedReader br = new BufferedReader(reader);
-                while (br.readLine() != null) {
-                    content.append(br.readLine());
-                }
-                br.close();
-                if (Constants.PARRTERN_SUCCESS.matcher(content).find()) {
-                    contentList.add(content.toString());
+            Session session = createMailSession(host);
+            Store store = session.getStore("pop3");
+            store.connect(userMail, passWord);
+
+            // 获得收件箱
+            Folder folder = store.getFolder("INBOX");
+
+            folder.open(Folder.READ_WRITE);    //打开收件箱
+            // 得到收件箱中的所有邮件,并解析
+            Message[] messages = folder.getMessages();
+
+            for (int i = 0, count = messages.length; i < count; i++) {
+                MimeMessage msg = (MimeMessage) messages[i];
+                StringBuffer buffer = new StringBuffer();
+                getMailTextContent(msg, buffer);
+                if (Constants.PARRTERN_SUCCESS.matcher(buffer).find()) {
+                    contentList.add(buffer.toString());
                 }
             }
-            pop3Client.logout();
-            pop3Client.disconnect();
-        } catch (IOException e) {
+            //释放资源
+            folder.close(true);
+            store.close();
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
         return contentList;
     }
 
 
+    private static Session createMailSession(String host) {
+        // 准备连接服务器的会话信息
+        Properties props = new Properties();
+        props.setProperty("mail.store.protocol", "pop3");        // 协议
+        props.setProperty("mail.pop3.port", "110");                // 端口
+        props.setProperty("mail.pop3.host", host);    // pop3服务器
+        // 创建Session实例对象
+        Session session = Session.getInstance(props);
+        return session;
+    }
+
+
+
     /**
-     * 接收邮件
+     * 从邮件中获取url
      */
     public static List<String> getURLFromMail(String host, String userMail, String passWord) {
         List<String> urlList = new ArrayList<String>();
         try {
-            // 准备连接服务器的会话信息
-            Properties props = new Properties();
-            props.setProperty("mail.store.protocol", "pop3");        // 协议
-            props.setProperty("mail.pop3.port", "110");                // 端口
-            props.setProperty("mail.pop3.host", host);    // pop3服务器
-            // 创建Session实例对象
-            Session session = Session.getInstance(props);
+            Session session = createMailSession(host);
             Store store = session.getStore("pop3");
             store.connect(userMail, passWord);
 
             // 获得收件箱
             Folder folder = store.getFolder("INBOX");
-        /* Folder.READ_ONLY：只读权限
-         * Folder.READ_WRITE：可读可写（可以修改邮件的状态）
-		 */
+
             folder.open(Folder.READ_WRITE);    //打开收件箱
             // 得到收件箱中的所有邮件,并解析
             Message[] messages = folder.getMessages();

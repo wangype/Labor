@@ -67,7 +67,7 @@ public class Runner {
         logger.info("开始输出结果到文件");
         for (Map<String, String> mailMap : mailsInfo) {
             String mailUser = mailMap.get(Constants.USERMAIL);
-            List<String> contents = MailUtils.getComfirmInfo(mailMap.get(Constants.HOST),
+            List<String> contents = MailUtils.getComfirmInfoFromMail(mailMap.get(Constants.HOST),
                     mailUser,
                     mailMap.get(Constants.PASSWORD));
             for (String content : contents) {
@@ -106,15 +106,15 @@ public class Runner {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             // 发送注册请求
             logger.info(String.format("Email [%s] 开始进行注册", mailUser));
-            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, false, 8);
+            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, false, 5);
             if (reponse != null) {
                 logger.info(String.format("Email [%s] 注册成功", mailUser));
             } else {
                 logger.info(String.format("Email [%s] 注册失败", mailUser));
-                synchronized (checkSet) {
+                synchronized (Runner.class) {
                     checkSet.add(mailUser);
+                    countDownLatch.countDown();
                 }
-                countDownLatch.countDown();
             }
         }
     }
@@ -151,17 +151,17 @@ public class Runner {
                 }
                 logger.info(String.format("[%s] 检查邮箱中注册邮件", mailUser));
                 Utils.threadSleep(1000);
-                synchronized (checkSet) {
+                synchronized (Runner.class) {
                     // 注册邮件失败，这里就不再进行检查
                     if (checkSet.contains(mailUser))
                         break;
                 }
             }
             // 根据获取url开始填写信息
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            if (urlList == null) {
+            if (urlList == null || urlList.size() == 0) {
                 return;
             }
+            CloseableHttpClient httpclient = HttpClients.createDefault();
             for (String url : urlList) {
                 logger.info("get url from mail :" + url);
                 // 发送get请求查看url是否可用

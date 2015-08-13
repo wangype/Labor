@@ -67,11 +67,11 @@ public class Constants {
      */
     public static Pattern PARRTERN_DB_FAIL = Pattern.compile("DB接続に失敗しました");
     public static Pattern PARRTERN_SESSION_ERR = Pattern.compile("セッションエラーが発生しました。恐れ入りますが、もう一度最初から操作してください");
-    public static Pattern PARRTERN_UNKNOWN_ERR = Pattern.compile("予約完了");
-    public static Pattern PARRTERN_ORDER_SUCCESS = Pattern.compile("ただいま満席のため");
-    public static Pattern PARRTERN_ORDER_FULL = Pattern.compile("既にご予約済み");
-    public static Pattern PARRTERN_ORDERED = Pattern.compile("本イベントは受付期間外のため");
-    public static Pattern PARRTERN_BEFORE_START = Pattern.compile("DB接続に失敗しました");
+    public static Pattern PARRTERN_UNKNOWN_ERR = Pattern.compile("エラーが発生しました。恐れ入りますが、もう一度最初から操作してくださ");
+    public static Pattern PARRTERN_ORDER_SUCCESS = Pattern.compile("予約完了");
+    public static Pattern PARRTERN_ORDER_FULL = Pattern.compile("ただいま満席のため");
+    public static Pattern PARRTERN_ORDERED = Pattern.compile("既にご予約済み");
+    public static Pattern PARRTERN_BEFORE_START = Pattern.compile("本イベントは受付期間外のため");
     public static Pattern PARRTERN_TOO_BUSY = Pattern.compile("Too Busy");
     public static Pattern PARRTERN_ZSCALER = Pattern.compile("Zscaler Directory Authentication");
     public static Pattern PARRTERN_VIP_HAS_RESERVED = Pattern.compile("既にご予約済みですので、新規予約ができません");
