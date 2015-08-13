@@ -146,6 +146,14 @@ public class Utils {
             } catch (IOException e) {
                 logger.error(e.getMessage());
                 Utils.ThreadSleep(500);
+            } finally {
+                if (response != null) {
+                    try {
+                        response.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             if (response == null) {
                 continue;
