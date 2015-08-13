@@ -153,6 +153,7 @@ public class MailUtils {
                     Matcher matcher = pattern.matcher(line);
                     if (matcher.find()) {
                         String url = matcher.group(0);
+                        url = url.replaceAll("\n|\r", "");
                         urlList.add(url);
                         break;
                     }

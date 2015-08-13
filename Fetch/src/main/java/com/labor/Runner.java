@@ -1,6 +1,5 @@
 package com.labor;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -107,7 +106,7 @@ public class Runner {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             // 发送注册请求
             logger.info(String.format("Email [%s] 开始进行注册", mailUser));
-            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, false, 5);
+            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, false, 8);
             if (reponse != null) {
                 logger.info(String.format("Email [%s] 注册成功", mailUser));
             } else {
@@ -202,10 +201,10 @@ public class Runner {
             String request_url = "https://aksale.advs.jp/cp/akachan_sale_pc/reg_form_event_1.cgi";
             Map<String, String> params = new HashMap<String, String>();
             params.put(Constants.VIPPASSWORD, vipMap.get(Constants.VIPPASSWORD));
-            params.put(Constants.SEI, vipMap.get(Constants.SEI));
-            params.put(Constants.MEI, vipMap.get(Constants.MEI));
-            params.put(Constants.MEI_KANA, vipMap.get(Constants.MEI_KANA));
-            params.put(Constants.SEI_KANA, vipMap.get(Constants.SEI_KANA));
+            params.put(Constants.SEI, Utils.encodeJP(vipMap.get(Constants.SEI)));
+            params.put(Constants.MEI, Utils.encodeJP(vipMap.get(Constants.MEI)));
+            params.put(Constants.MEI_KANA, Utils.encodeJP(vipMap.get(Constants.MEI_KANA)));
+            params.put(Constants.SEI_KANA, Utils.encodeJP(vipMap.get(Constants.SEI_KANA)));
             params.put(Constants.TEL1, vipMap.get(Constants.TEL1));
             params.put(Constants.TEL2, vipMap.get(Constants.TEL2));
             params.put(Constants.TEL3, vipMap.get(Constants.TEL3));
@@ -240,9 +239,6 @@ public class Runner {
             }
             return String.format("提取url[%s]正确", url);
         }
-
-
     }
-
 
 }

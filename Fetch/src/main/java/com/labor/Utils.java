@@ -13,6 +13,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -109,6 +110,7 @@ public class Utils {
                 response = httpclient.execute(post);
                 status = response.getStatusLine().getStatusCode();
                 if (status == 200) {
+                    logger.info(EntityUtils.toString(response.getEntity()));
                     return response;
                 }
             } catch (UnsupportedEncodingException e) {
@@ -217,7 +219,12 @@ public class Utils {
 
 
     public static String encodeJP(String str) {
-        return new String(str.getBytes(), Charset.forName("shift_jis"));
+        try {
+            return URLEncoder.encode(str, "shift_jis");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
