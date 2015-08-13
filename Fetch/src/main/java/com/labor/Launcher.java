@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * 总启动类
- * Created by baidu on 15/8/11.
+ * Created by wyp on 15/8/11.
  */
 public class Launcher {
 

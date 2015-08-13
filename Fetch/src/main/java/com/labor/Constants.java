@@ -3,7 +3,7 @@ package com.labor;
 import java.util.regex.Pattern;
 
 /**
- * Created by baidu on 15/8/12.
+ * Created by wyp on 15/8/12.
  */
 public class Constants {
 

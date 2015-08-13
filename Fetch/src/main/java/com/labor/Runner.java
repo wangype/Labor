@@ -6,25 +6,19 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 执行器
- * Created by baidu on 15/8/11.
+ * Created by wyp on 15/8/11.
  */
 public class Runner {
 
 
     private static Logger logger = Logger.getLogger(Runner.class);
-
-    private BlockingQueue<Object> blockingQueue = new LinkedBlockingQueue<Object>();
 
     public void excute() {
         // 1.清理邮箱
@@ -49,24 +43,23 @@ public class Runner {
         ExecutorService executorService = Executors.newFixedThreadPool(30);
 
         List<Map<String, String>> vipInfo = (List<Map<String, String>>) CollectorInfo.getValue(Constants.VIPS);
+        int size = mailsInfo.size();
+        CountDownLatch countDownLatch = new CountDownLatch(size);
         int index = 0;
         for (Map<String, String> mailInfo : mailsInfo) {
             // 3. 开始进行邮件注册
-            executorService.execute(new RegForOrder(mailInfo.get(Constants.USERMAIL)));
+            executorService.execute(new RegForOrder(mailInfo.get(Constants.USERMAIL), countDownLatch));
             // 4. 填写信息
             executorService.execute(new ComfirmOrder(mailInfo.get(Constants.USERMAIL), mailInfo.get(Constants.HOST),
-                    mailInfo.get(Constants.PASSWORD), vipInfo.get(index)));
+                    mailInfo.get(Constants.PASSWORD), vipInfo.get(index), countDownLatch));
             index++;
         }
 
-        // 主线程等子线程完成
-        while (index != 0) {
-            try {
-                blockingQueue.take();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            index--;
+        //主线程等子线程
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         // 5.从邮箱获取结果，输出到文件
@@ -77,11 +70,12 @@ public class Runner {
                     mailUser,
                     mailMap.get(Constants.PASSWORD));
             for (String content : contents) {
-                String name = mailUser+".txt";
+                String name = mailUser + ".txt";
                 Utils.outputFile(content, name);
                 logger.info("输出文件：" + name);
             }
         }
+        executorService.shutdown();
         logger.info("运行结束");
     }
 
@@ -89,9 +83,11 @@ public class Runner {
     private class RegForOrder extends Thread {
 
         private String mailUser;
+        private CountDownLatch countDownLatch;
 
-        public RegForOrder(String mailUser) {
+        public RegForOrder(String mailUser, CountDownLatch countDownLatch) {
             this.mailUser = mailUser;
+            this.countDownLatch = countDownLatch;
         }
 
         @Override
@@ -114,9 +110,16 @@ public class Runner {
                 logger.info(String.format("Email [%s] 注册成功", mailUser));
             } else {
                 logger.info(String.format("Email [%s] 注册失败", mailUser));
+                synchronized (checkSet) {
+                    checkSet.add(mailUser);
+                }
+                countDownLatch.countDown();
             }
         }
     }
+
+
+    private Set<String> checkSet = new HashSet<String>();
 
     // 提取URL并填写信息线程
     private class ComfirmOrder extends Thread {
@@ -125,12 +128,14 @@ public class Runner {
         private String host;
         private String passWord;
         private Map<String, String> vipMap;
+        private CountDownLatch countDownLatch;
 
-        public ComfirmOrder(String mailUser, String host, String passWord, Map<String, String> vipMap) {
+        public ComfirmOrder(String mailUser, String host, String passWord, Map<String, String> vipMap, CountDownLatch countDownLatch) {
             this.mailUser = mailUser;
             this.host = host;
             this.passWord = passWord;
             this.vipMap = vipMap;
+            this.countDownLatch = countDownLatch;
         }
 
         @Override
@@ -145,9 +150,17 @@ public class Runner {
                 }
                 logger.info(String.format("[%s] 检查邮箱中注册邮件", mailUser));
                 Utils.ThreadSleep(1000);
+                synchronized (checkSet) {
+                    // 注册邮件失败，这里就不再进行检查
+                    if (checkSet.contains(mailUser))
+                        break;
+                }
             }
             // 根据获取url开始填写信息
             CloseableHttpClient httpclient = HttpClients.createDefault();
+            if (urlList == null) {
+                return;
+            }
             for (String url : urlList) {
                 logger.info("get url from mail :" + url);
                 // 发送get请求查看url是否可用
@@ -166,11 +179,7 @@ public class Runner {
                 ret = makeSure(httpclient);
                 logger.info(ret);
             }
-            try {
-                blockingQueue.put(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            countDownLatch.countDown();
         }
 
 

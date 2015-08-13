@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by baidu on 15/8/11.
+ * Created by wyp on 15/8/11.
  */
 public class MailUtils {
 
