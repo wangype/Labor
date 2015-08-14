@@ -3,6 +3,7 @@ package com.labor;
 import com.csvreader.CsvReader;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -63,19 +64,19 @@ public class Utils {
 
 
     public static CloseableHttpResponse postUtilNoDbFailure(CloseableHttpClient httpclient, String requestUrl,
-                                                            Map<String, String> params, boolean isUseProxy, int maxRetry,
-                                                            String mailUser) {
+                                                            Map<String, String> params, int maxRetry,
+                                                            String mailUser, int timeOut) {
         CloseableHttpResponse response = null;
         try {
             for (int i = 0; i < maxRetry; i++) {
-                response = postUtilOK(httpclient, requestUrl, params, isUseProxy, maxRetry);
+                response = postUtilOK(httpclient, requestUrl, params, maxRetry, timeOut);
                 if (response == null) {
                     threadSleep(500);
                     continue;
                 }
                 String content = EntityUtils.toString(response.getEntity());
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
-                    logger.error(String.format(Constants.PARRTERN_BEFORE_START.toString()+"[%s]", mailUser));
+                    logger.error(String.format(Constants.PARRTERN_BEFORE_START.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_DB_FAIL.matcher(content).find()) {
@@ -99,7 +100,7 @@ public class Utils {
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("postutilNoDbFailure " + e.getMessage());
         } finally {
             if (response != null) {
                 try {
@@ -114,14 +115,17 @@ public class Utils {
 
 
     private static CloseableHttpResponse postUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
-                                                   boolean isUseProxy, int maxRetry) {
+                                                    int maxRetry, int timeOut) {
         HttpPost post = new HttpPost(requestUrl);
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         CloseableHttpResponse response = null;
         for (String key : params.keySet()) {
             nvps.add(new BasicNameValuePair(key, params.get(key)));
         }
-
+        if (timeOut > 0) {
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(timeOut).setConnectTimeout(timeOut).build();//设置请求和传输超时时间
+            post.setConfig(requestConfig);
+        }
         for (String key : httpConfig.keySet()) {
             post.addHeader(key, httpConfig.get(key));
         }
@@ -139,7 +143,7 @@ public class Utils {
             } catch (ClientProtocolException e) {
                 logger.error(e.getMessage());
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                logger.error("postUtilOK " + e.getMessage());
             }
         }
         return response;
@@ -147,7 +151,7 @@ public class Utils {
 
 
     private static CloseableHttpResponse getUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
-                                                  boolean isUseProxy, int maxRetry) {
+                                                   int maxRetry, int timeOut) {
         CloseableHttpResponse response = null;
         for (int i = 0; i < maxRetry; i++) {
             try {
@@ -159,13 +163,16 @@ public class Utils {
                     requestUrl += "?" + EntityUtils.toString(new UrlEncodedFormEntity(pairs, "utf-8"));
                 }
                 HttpGet httpGet = new HttpGet(requestUrl);
+                if (timeOut > 0) {
+                    RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(timeOut).setConnectTimeout(timeOut).build();//设置请求和传输超时时间
+                    httpGet.setConfig(requestConfig);
+                }
                 for (String key : httpConfig.keySet()) {
                     httpGet.addHeader(key, httpConfig.get(key));
                 }
                 response = httpclient.execute(httpGet);
             } catch (IOException e) {
-                logger.error(e.getMessage());
-                threadSleep(500);
+                logger.error("getUtilOK " + e.getMessage());
             }
             if (response == null) {
                 continue;
@@ -178,18 +185,18 @@ public class Utils {
 
 
     public static CloseableHttpResponse getUtilNoErr(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
-                                                     boolean isUseProxy, int maxRetry, String mailUser) {
+                                                     int maxRetry, String mailUser, int timeOut) {
         CloseableHttpResponse response = null;
         try {
             for (int i = 0; i < maxRetry; i++) {
-                response = getUtilOK(httpclient, requestUrl, params, isUseProxy, maxRetry);
+                response = getUtilOK(httpclient, requestUrl, params, maxRetry, timeOut);
                 if (response == null) {
                     threadSleep(500);
                     continue;
                 }
                 String content = EntityUtils.toString(response.getEntity());
                 if (Constants.PARRTERN_BEFORE_START.matcher(content).find()) {
-                    logger.error(String.format(Constants.PARRTERN_BEFORE_START.toString()+"[%s]", mailUser));
+                    logger.error(String.format(Constants.PARRTERN_BEFORE_START.toString() + "[%s]", mailUser));
                     threadSleep(500);
                     continue;
                 } else if (Constants.PARRTERN_SESSION_ERR.matcher(content).find()) {
@@ -209,7 +216,7 @@ public class Utils {
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("getUtilNoErr " + e.getMessage());
         } finally {
             if (response != null) {
                 try {

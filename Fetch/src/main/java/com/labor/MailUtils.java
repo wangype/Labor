@@ -193,7 +193,6 @@ public class MailUtils {
                         String url = matcher.group(0);
                         url = url.replaceAll("\n|\r", "");
                         urlList.add(url);
-                        break;
                     }
                 }
             }
