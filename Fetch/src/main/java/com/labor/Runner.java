@@ -18,7 +18,11 @@ public class Runner {
 
 
     private static Logger logger = Logger.getLogger(Runner.class);
+
     private Object lock = new Object();
+
+    private volatile Set<String> failSet = new HashSet<String>();
+
 
     public void excute() {
         logger.info("开始清理邮箱");
@@ -123,7 +127,6 @@ public class Runner {
     }
 
 
-    private Set<String> failSet = new HashSet<String>();
 
     // 提取URL并填写信息线程
     private class ComfirmOrder extends Thread {
@@ -156,12 +159,10 @@ public class Runner {
                 }
                 logger.info(String.format("[%s] 检查邮箱中注册邮件", mailUser));
                 Utils.threadSleep(1000);
-                synchronized (lock) {
-                    // 注册邮件失败，这里就不再进行检查
-                    if (failSet.remove(mailUser)) {
-                        regStatus = false;
-                        break;
-                    }
+                // 注册邮件失败，这里就不再进行检查
+                if (failSet.contains(mailUser)) {
+                    regStatus = false;
+                    break;
                 }
             }
             //注册失败就不进行之后步骤了
