@@ -158,7 +158,7 @@ public class Runner {
                 Utils.threadSleep(1000);
                 synchronized (lock) {
                     // 注册邮件失败，这里就不再进行检查
-                    if (failSet.contains(mailUser)) {
+                    if (failSet.remove(mailUser)) {
                         regStatus = false;
                         break;
                     }
