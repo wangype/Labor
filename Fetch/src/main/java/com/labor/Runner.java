@@ -19,10 +19,6 @@ public class Runner {
 
     private static Logger logger = Logger.getLogger(Runner.class);
 
-    private Object lock = new Object();
-
-    private volatile Set<String> failSet = new HashSet<String>();
-
 
     public void excute() {
         logger.info("开始清理邮箱");
@@ -113,19 +109,14 @@ public class Runner {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             // 发送注册请求
             logger.info(String.format("Email [%s] 开始进行注册", mailUser));
-            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, 5, mailUser, 6000);
+            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, 5, mailUser, -1);
             if (reponse != null) {
                 logger.info(String.format("Email [%s] 注册成功", mailUser));
             } else {
                 logger.info(String.format("Email [%s] 注册失败", mailUser));
-                synchronized (lock) {
-                    failSet.add(mailUser);
-                    countDownLatch.countDown();
-                }
             }
         }
     }
-
 
 
     // 提取URL并填写信息线程
@@ -150,7 +141,6 @@ public class Runner {
         public void run() {
             List<String> urlList = null;
             // 从邮箱获取url
-            boolean regStatus = true;
             while (true) {
                 urlList = MailUtils.getURLFromMail(host, mailUser, passWord);
                 if (urlList != null && urlList.size() > 0) {
@@ -159,25 +149,18 @@ public class Runner {
                 }
                 logger.info(String.format("[%s] 检查邮箱中注册邮件", mailUser));
                 Utils.threadSleep(1000);
-                // 注册邮件失败，这里就不再进行检查
-                if (failSet.contains(mailUser)) {
-                    regStatus = false;
-                    break;
-                }
             }
             //注册失败就不进行之后步骤了
-            if (!regStatus) {
-                return;
-            }
             // 根据获取url开始填写信息
             final CloseableHttpClient httpclient = HttpClients.createDefault();
             logger.info("[" + mailUser + "]获取到url数量:" + urlList.size());
 
-            final CountDownLatch latch = new CountDownLatch(urlList.size());
-            for (final String url : urlList) {
+            final CountDownLatch latch = new CountDownLatch(10);
+            final String url = urlList.get(0);
+            logger.info("get url from mail :" + url);
+            for (int i = 0; i < 10; i++) {
                 new Thread(new Runnable() {
                     public void run() {
-                        logger.info("get url from mail :" + url);
                         // 发送get请求查看url是否可用
                         logger.info(String.format("[%s]验证邮箱中url是否正确", mailUser));
                         String ret = checkUrlValid(url, httpclient);
