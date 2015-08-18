@@ -51,7 +51,7 @@ public class Runner {
         int index = 0;
         for (Map<String, String> mailInfo : mailsInfo) {
             // 3. 开始进行邮件注册
-            executorService.execute(new RegForOrder(mailInfo.get(Constants.USERMAIL), countDownLatch));
+            executorService.execute(new RegForOrder(mailInfo.get(Constants.USERMAIL)));
             // 4. 填写信息
             executorService.execute(new ComfirmOrder(mailInfo.get(Constants.USERMAIL), mailInfo.get(Constants.HOST),
                     mailInfo.get(Constants.PASSWORD), vipInfo.get(index), countDownLatch));
@@ -87,11 +87,9 @@ public class Runner {
     private class RegForOrder extends Thread {
 
         private String mailUser;
-        private CountDownLatch countDownLatch;
 
-        public RegForOrder(String mailUser, CountDownLatch countDownLatch) {
+        public RegForOrder(String mailUser) {
             this.mailUser = mailUser;
-            this.countDownLatch = countDownLatch;
         }
 
         @Override
