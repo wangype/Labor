@@ -1,13 +1,19 @@
 package com.labor;
 
 import org.apache.commons.cli.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 总启动类
@@ -23,13 +29,31 @@ public class Launcher {
         options.addOption("v", true, "The vip info");
         options.addOption("e", true, "events.csv");
         options.addOption("c", true, "confirm_time");
-//        options.addOption("r", false, "receive mail");
+        char[] requres = new char[]{'m', 'v', 'e', 'c'};
+        options.addOption("f", true, "fetch event id");
+        options.addOption("g", false, "get result");
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
-            Collection<Option> optionCollection = options.getOptions();
-            for (Option option : optionCollection) {
-                if (!cmd.hasOption(option.getOpt())) {
+            String fileName = cmd.getOptionValue("f");
+            if (fileName != null) {
+                fetchEventID(fileName);
+                return;
+            }
+
+
+            if (cmd.hasOption('g') && cmd.hasOption('m')) {
+                // 2.收集信息
+                String mailsFile = cmd.getOptionValue("m");
+                if (mailsFile != null) {
+                    getMail(Utils.readCSVFile(new File(mailsFile)));
+                    return;
+                }
+            }
+
+            for (int i = 0; i < requres.length; i++) {
+                char c = requres[i];
+                if (!cmd.hasOption(c)) {
                     System.out.println("参数错误");
                     HelpFormatter formatter = new HelpFormatter();
                     formatter.printHelp("help", options);
@@ -72,6 +96,78 @@ public class Launcher {
         // 3.执行任务
         Runner runner = new Runner();
         runner.excute();
+    }
+
+
+    private static void fetchEventID(String fileName) throws IOException {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        Properties prop = new Properties();
+        InputStream fileInputStream = Test.class.getClassLoader().getResourceAsStream("event.properties");
+        BufferedReader bf = new BufferedReader(new InputStreamReader(fileInputStream, "utf-8"));
+        prop.load(bf);
+        Pattern pattern = Pattern.compile("event_id=(\\d+)");
+        Map<String, StringBuffer> allMap = new HashMap<String, StringBuffer>();
+        for (Object o : prop.keySet()) {
+            String shopName = o.toString();
+            String url = prop.get(shopName).toString();
+            CloseableHttpResponse response = Utils.getUtilOK(httpclient, url, null, 1, -1);
+            String content = EntityUtils.toString(response.getEntity(), "utf-8");
+            Document doc = Jsoup.parse(content);
+            Elements elements = doc.getElementsByClass("evtListTable");
+            Iterator<Element> iterator = elements.iterator();
+            StringBuffer stringBuffer = new StringBuffer();
+            while (iterator.hasNext()) {
+                Element element = iterator.next();
+                Elements tr = element.select("tr");
+                Iterator<Element> iterator2 = tr.iterator();
+                while (iterator2.hasNext()) {
+                    Element element1 = iterator2.next();
+                    if (element1.getElementsMatchingText("予約受付期間").size() > 0) {
+                        stringBuffer.append(element1.getElementsByTag("td") + "\n");
+                    }
+                }
+                Elements links = element.select("a[href]");
+                String s = links.first().toString();
+                Matcher matcher = pattern.matcher(s);
+                if (matcher.find()) {
+                    stringBuffer.append(matcher.group(1) + "\n");
+                }
+            }
+            allMap.put(shopName, stringBuffer);
+        }
+
+        File file = new File(fileName);
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(file);
+            for (String shopName : allMap.keySet()) {
+                fileOutputStream.write((shopName + "\n").getBytes());
+                fileOutputStream.write((allMap.get(shopName).toString() + "\n").getBytes());
+                fileOutputStream.write(("------------------------------------------" + "\n").getBytes());
+            }
+        } finally {
+            if (fileOutputStream != null) {
+                fileOutputStream.close();
+            }
+        }
+        System.out.println("生成文件:" + file.getAbsolutePath());
+    }
+
+
+    private static void getMail(List<Map<String, String>> mailsInfo) {
+        System.out.println("开始输出结果到文件");
+        for (Map<String, String> mailMap : mailsInfo) {
+            String mailUser = mailMap.get(Constants.USERMAIL);
+            List<String> contents = MailUtils.getComfirmInfoFromMail(mailMap.get(Constants.HOST),
+                    mailUser,
+                    mailMap.get(Constants.PASSWORD));
+            for (String content : contents) {
+                String name = mailUser + ".txt";
+                Utils.outputFile(content, name);
+                System.out.println("输出文件：" + name);
+            }
+        }
+        System.out.println("运行结束");
     }
 
 

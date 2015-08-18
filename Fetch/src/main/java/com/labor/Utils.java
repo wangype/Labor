@@ -36,6 +36,7 @@ public class Utils {
         httpConfig.put("Accept-Language", "en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3");
         httpConfig.put("Accept-Encoding", "gzip, deflate");
         httpConfig.put("Accept", "text/html, application/xhtml+xml, */*j");
+        httpConfig.put("Content_Type", "application/x-www-form-urlencoded");
     }
 
 
@@ -114,7 +115,7 @@ public class Utils {
     }
 
 
-    private static CloseableHttpResponse postUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
+    public static CloseableHttpResponse postUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
                                                     int maxRetry, int timeOut) {
         HttpPost post = new HttpPost(requestUrl);
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -150,7 +151,7 @@ public class Utils {
     }
 
 
-    private static CloseableHttpResponse getUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
+    public static CloseableHttpResponse getUtilOK(CloseableHttpClient httpclient, String requestUrl, Map<String, String> params,
                                                    int maxRetry, int timeOut) {
         CloseableHttpResponse response = null;
         for (int i = 0; i < maxRetry; i++) {

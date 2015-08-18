@@ -109,7 +109,7 @@ public class Runner {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             // 发送注册请求
             logger.info(String.format("Email [%s] 开始进行注册", mailUser));
-            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, 5, mailUser, -1);
+            CloseableHttpResponse reponse = Utils.postUtilNoDbFailure(httpclient, requestURL, params, 10, mailUser, -1);
             if (reponse != null) {
                 logger.info(String.format("Email [%s] 注册成功", mailUser));
             } else {
