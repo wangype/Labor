@@ -286,4 +286,16 @@ public class Utils {
         return list;
     }
 
+    public static void writeCsv(String[] content, FileOutputStream fileOutputStream) throws IOException {
+        for (int i = 0; i < content.length; i++) {
+            String s = content[i];
+            if (i != content.length - 1) {
+                s += ",";
+            } else {
+                s += "\n";
+            }
+            fileOutputStream.write(s.getBytes());
+        }
+    }
+
 }

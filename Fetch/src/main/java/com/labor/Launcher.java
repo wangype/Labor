@@ -5,6 +5,10 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,6 +36,7 @@ public class Launcher {
         char[] requres = new char[]{'m', 'v', 'e', 'c'};
         options.addOption("f", true, "fetch event id");
         options.addOption("g", false, "get result");
+        options.addOption("p", true, "excel path");
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -41,6 +46,11 @@ public class Launcher {
                 return;
             }
 
+            String excelFile = cmd.getOptionValue('p');
+            if (excelFile != null) {
+                generateCSV(excelFile);
+                return;
+            }
 
             if (cmd.hasOption('g') && cmd.hasOption('m')) {
                 // 2.收集信息
@@ -170,5 +180,49 @@ public class Launcher {
         System.out.println("运行结束");
     }
 
+
+    public static void generateCSV(String filePath) throws IOException {
+        InputStream inputStream = new FileInputStream(filePath);
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook(inputStream);
+        HSSFSheet sheet = hssfWorkbook.getSheetAt(0);
+        String[] needs = new String[]{"sei", "mei", "sei_kana", "mei_kana", "tel1", "tel2", "tel3", "password", "card_no"};
+        int[] coloums = new int[]{0, 1, 2, 3, 4, 5, 6, 11};
+        int rows = sheet.getPhysicalNumberOfRows();
+        File csv = new File("out.csv");
+        FileOutputStream fileOutputStream = new FileOutputStream(csv);
+        Utils.writeCsv(needs, fileOutputStream);
+        for (int i = 0; i < rows; i++) {
+            if (i == 0)
+                continue;
+            Row row = sheet.getRow(i);
+            List<String> contents = new ArrayList<String>();
+            for (int j = 0; j < coloums.length; j++) {
+                Cell cell = row.getCell(coloums[j]);
+                if (cell != null) {
+                    switch (cell.getCellType()) {
+                        case Cell.CELL_TYPE_FORMULA:
+                            break;
+                        case Cell.CELL_TYPE_NUMERIC:
+                            double b = cell.getNumericCellValue();
+                            if (coloums[j] == 4) {
+                                contents.add("0" + String.valueOf((int) b));
+                            } else {
+                                contents.add(String.valueOf((int) b));
+                            }
+                            break;
+                        case Cell.CELL_TYPE_STRING:
+                            contents.add(cell.getStringCellValue().replace("\n", ""));
+                            break;
+                        default:
+                            contents.add("error");
+                            break;
+                    }
+                }
+            }
+            contents.add(7, "1234567i");
+            Utils.writeCsv(contents.toArray(new String[0]), fileOutputStream);
+        }
+        System.out.println("生成成功");
+    }
 
 }
