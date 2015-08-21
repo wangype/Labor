@@ -15,6 +15,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +38,7 @@ public class Launcher {
         options.addOption("f", true, "fetch event id");
         options.addOption("g", false, "get result");
         options.addOption("p", true, "excel path");
+        options.addOption("s", true, "eventFilePath,  date(MM-dd)");
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -45,7 +47,12 @@ public class Launcher {
                 fetchEventID(fileName);
                 return;
             }
-
+            if (cmd.hasOption('s')) {
+                if (args.length == 3) {
+                    synEventID(args[1], args[2]);
+                    return;
+                }
+            }
             String excelFile = cmd.getOptionValue('p');
             if (excelFile != null) {
                 generateCSV(excelFile);
@@ -109,6 +116,97 @@ public class Launcher {
     }
 
 
+    private static void synEventID(String eventDirPath, String date) {
+        File dir = new File(eventDirPath);
+        File[] eventFiles = dir.listFiles();
+        Map<String, File> eventFilesMap = new HashMap<String, File>();
+        for (File eventFile : eventFiles) {
+            eventFilesMap.put(eventFile.getName(), eventFile);
+        }
+        try {
+            SimpleDateFormat simpleDate = new SimpleDateFormat("MM-dd");
+            Date userDate = simpleDate.parse(date);
+
+            SimpleDateFormat format = new SimpleDateFormat("M/dd");
+
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            Properties prop = new Properties();
+            InputStream fileInputStream = Test.class.getClassLoader().getResourceAsStream("event.properties");
+            BufferedReader bf = new BufferedReader(new InputStreamReader(fileInputStream, "utf-8"));
+            prop.load(bf);
+            Pattern NamePattern = Pattern.compile("\\((.+)\\)");
+            Set<String> record = new HashSet<String>();
+            Pattern pattern = Pattern.compile("event_id=(\\d+)");
+            for (Object o : prop.keySet()) {
+                String shopName = o.toString();
+                String url = prop.get(shopName).toString();
+                Matcher match = NamePattern.matcher(shopName);
+                if (match.find()) {
+                    shopName = match.group(1);
+                }
+                CloseableHttpResponse response = Utils.getUtilOK(httpclient, url, null, 1, -1);
+                String content = EntityUtils.toString(response.getEntity(), "utf-8");
+                Document doc = Jsoup.parse(content);
+                Elements elements = doc.getElementsByClass("evtListTable");
+                Iterator<Element> iterator = elements.iterator();
+                int count = 0;
+                while (iterator.hasNext()) {
+                    Element element = iterator.next();
+                    Elements tr = element.select("tr");
+                    Iterator<Element> iterator2 = tr.iterator();
+                    while (iterator2.hasNext()) {
+                        Element element1 = iterator2.next();
+                        if (element1.getElementsMatchingText("予約受付期間").size() > 0) {
+                            String time = element1.getElementsByTag("td").first().ownText();
+                            String[] ss = time.split("〜|~");
+                            char[] chars = ss[0].toCharArray();
+                            for (int i = 0; i < chars.length; i++) {
+                                char aChar = chars[i];
+                                if (aChar == 160) {
+                                    chars[i] = 32;
+                                }
+                            }
+                            String bb = new String(chars);
+                            String[] bbs = bb.split(" ");
+                            Date webDate = format.parse(bbs[0]);
+                            if (webDate.compareTo(userDate) == 0) {
+                                Elements links = element.select("a[href]");
+                                String s = links.first().toString();
+                                Matcher matcher = pattern.matcher(s);
+                                if (matcher.find()) {
+                                    String evendID = matcher.group(1);
+                                    File file = null;
+                                    if (record.contains(shopName)) {
+                                        count++;
+                                        file = new File(dir.getAbsolutePath() + "/" + "events_" + shopName + count + ".csv");
+                                    } else {
+                                        file = eventFilesMap.get("events_" + shopName + ".csv");
+                                        if (file == null) {
+                                            System.out.println(shopName + "配置有误");
+                                            continue;
+                                        }
+
+                                    }
+                                    System.out.println("同步文件：" + file.getName());
+                                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                                    Utils.writeCsv(new String[]{"event_id", "event_type"}, fileOutputStream);
+                                    Utils.writeCsv(new String[]{evendID, "7"}, fileOutputStream);
+                                    fileOutputStream.close();
+                                    record.add(shopName);
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     private static void fetchEventID(String fileName) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         Properties prop = new Properties();
@@ -133,6 +231,7 @@ public class Launcher {
                 while (iterator2.hasNext()) {
                     Element element1 = iterator2.next();
                     if (element1.getElementsMatchingText("予約受付期間").size() > 0) {
+                        element1.getElementsByTag("td").first().ownText();
                         stringBuffer.append(element1.getElementsByTag("td") + "\n");
                     }
                 }
